@@ -1,5 +1,27 @@
 {
   "data": [
-
+    {
+      "id": 1,
+      "name": "maths",
+      "description": "This is mathematics course",
+      "enrolledStudents": [],
+      "availableSlots": 12
+    },
+    {
+      "id": 2,
+      "name": "science",
+      "description": "This is mathematics course",
+      "enrolledStudents": [
+        {
+          "id": 2,
+          "name": "vision"
+        },
+        {
+          "id": 2,
+          "name": "vision"
+        }
+      ],
+      "availableSlots": 10
+    }
   ]
 }

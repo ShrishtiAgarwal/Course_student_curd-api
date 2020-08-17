@@ -1,11 +1,11 @@
 const express = require('express')
 const { parse } = require("path");
 const fs = require('fs')
-const app = express.Router();
-const task=[]
+const app = express.Router()
+const {middle} = require('./../middlewares/middle_ware')
 
 
-// TO GET ALL THE COURSES //
+//-------------------- TO GET ALL THE COURSES -------------------//
 
 app.get('',(re,res)=> {
  // Reading all courses from json file and displaying it on Postman or console
@@ -34,9 +34,9 @@ app.get('',(re,res)=> {
     });
 })
 
-// TO GET COURSE PRINTED HAVING SPECIFIC COURSE ID
+//----------------- TO GET COURSE PRINTED HAVING SPECIFIC COURSE ID----------------//
 
-app.get('/:id',(req,res) => {
+app.get('/:id',middle,(req,res) => {
 
     const idd=parseInt(req.params.id)
     // READING FILE
@@ -67,11 +67,14 @@ app.get('/:id',(req,res) => {
 
 app.use(express.json())
 
-// ADDING COURSE
+
+
+//-------------------- ADDING COURSE -----------------------------------------------------//
+
 
 
 app.post('',(req,res) =>{
-    res.send("Testing")
+    //res.send("Testing")
     //const id = req.body.Id;
     const name = req.body.name;
     const description = req.body.description;
@@ -105,20 +108,20 @@ app.post('',(req,res) =>{
             obj1.data.push(jsonData); //add some data
             let json = JSON.stringify(obj1,null,2); //convert it back to json
             fs.writeFile('data(Jason)/courses.json', json, "utf8" ,()=>{
-               // res.json({success:true});
+               res.json({"success":"true"});
             })
 
 
 
 
         } else {
-           res.send(error);
+           res.send("error");
         }
     })
 
 })
 
-// TO ENROLL STUDENTS
+//---------------------- TO ENROLL STUDENTS --------------------------//
 
 
 app.post('/:id/enroll',(req,res)=>{
@@ -131,7 +134,7 @@ app.post('/:id/enroll',(req,res)=>{
     let student=fs.readFileSync('data(Jason)/Students.json')
     let student_data = JSON.parse(student);
 
-            console.log("heyyyyyyyyyyyyyyyy")
+            //console.log("hey")
             //console.log(course_data)
             let course_data = JSON.parse(course)
             console.log(course)
@@ -157,9 +160,10 @@ app.post('/:id/enroll',(req,res)=>{
             }
             if(y===0)
                 res.send("No such id is present")
+
             let json = JSON.stringify(course_data,null,2); //convert it back to json
             fs.writeFile('data(Jason)/courses.json', json, 'utf8' ,()=>{
-                //res.json({success:true})
+                res.json({"success":"true"});
            })
 
         console.log("out")
@@ -169,44 +173,45 @@ app.post('/:id/enroll',(req,res)=>{
 })
 
 
-// TO REMOVE STUDENTS
+//-------------------- TO REMOVE STUDENTS -------------------------///
 
 
 app.put('/:id/deregister',(req,res) =>{
-    res.send("put")
+    //res.send("put")
     const z=parseInt(req.params.id)
     const student_id = parseInt(req.body.studentId)
-    fs.readFile('data(Jason)/courses.json',function(error,data){
-      if(error)
-          res.send("no file")
-      else
-      {
-          const jsondata = JSON.parse(data)
+    let course = fs.readFileSync('data(Jason)/courses.json');
+  //  let dataa = fs.readFileSync('data(Jason)/courses.json')
+
+          let jsondata = JSON.parse(course)
           const h=[]
           let flag=0
-          console.log(jsondata)
+          //console.log(jsondata)
           for(obj in jsondata.data)
           {
+
               if(jsondata.data[obj].id===z)
               {
                     flag=1
+
+                  //console.log(student_index)
                   let student_index=jsondata.data[obj].enrolledStudents.indexOf(student_id)
                     jsondata.data[obj].enrolledStudents.splice(student_index,1);
                   jsondata.data[obj].availableSlots++
               }
           }
       if(flag===0)
-          res.send("Student is not enrolled in the course")
+          res.send("Invalid course/studentid")
           //console.log(h)
          // jsondata.data[obj].enrolledStudents=h
-          console.log(jsondata)
 
-          fs.writeFile('data(Jason)/courses.json',JSON.stringify(jsondata,null,2),()=>{
+    else{
+    let json = JSON.stringify(jsondata,null,2);
+          fs.writeFile('data(Jason)/courses.json', json, 'utf8' ,()=>{
+              res.json({"success":"true"});
+          })}
 
-          })
 
-      }
-    })
 
 
 })
