@@ -2,16 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="163b522d-8eed-442e-9188-faafbeed9019" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/data(Jason)/Auth.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/middlewares/middle_ware.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/auth.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data(Jason)/Auth.json" beforeDir="false" afterPath="$PROJECT_DIR$/data(Jason)/Auth.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data(Jason)/Students.json" beforeDir="false" afterPath="$PROJECT_DIR$/data(Jason)/Students.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data(Jason)/courses.json" beforeDir="false" afterPath="$PROJECT_DIR$/data(Jason)/courses.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/middlewares/middle_ware.js" beforeDir="false" afterPath="$PROJECT_DIR$/middlewares/middle_ware.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/courses.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/courses.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/student.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/student.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,7 +89,8 @@
       <workItem from="1597411657197" duration="6324000" />
       <workItem from="1597516396574" duration="5648000" />
       <workItem from="1597562453001" duration="6011000" />
-      <workItem from="1597641703049" duration="98000" />
+      <workItem from="1597641703049" duration="2906000" />
+      <workItem from="1597738030502" duration="6929000" />
     </task>
     <servers />
   </component>
@@ -123,5 +122,17 @@
       <screen x="72" y="27" width="1294" height="741" />
     </state>
     <state width="1271" height="172" key="GridCell.Tab.0.right/72.27.1294.741@72.27.1294.741" timestamp="1596845624115" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/auth.js</url>
+          <line>33</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

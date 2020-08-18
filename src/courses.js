@@ -7,11 +7,11 @@ const {middle} = require('./../middlewares/middle_ware')
 
 //-------------------- TO GET ALL THE COURSES -------------------//
 
-app.get('',(re,res)=> {
+app.get('',middle,(re,res)=> {
  // Reading all courses from json file and displaying it on Postman or console
 
 
-    fs.readFile("data(Jason)/courses.json", function(err, data) {
+    fs.readFile("data(Jason)/courses.json",function(err, data) {
 
         // Check for errors
         if (err) throw err
@@ -73,7 +73,7 @@ app.use(express.json())
 
 
 
-app.post('',(req,res) =>{
+app.post('',middle,(req,res) =>{
     //res.send("Testing")
     //const id = req.body.Id;
     const name = req.body.name;
@@ -124,7 +124,7 @@ app.post('',(req,res) =>{
 //---------------------- TO ENROLL STUDENTS --------------------------//
 
 
-app.post('/:id/enroll',(req,res)=>{
+app.post('/:id/enroll',middle,(req,res)=>{
     const idd=parseInt(req.params.id);
     console.log(" heyyyy",idd)
 
@@ -176,7 +176,7 @@ app.post('/:id/enroll',(req,res)=>{
 //-------------------- TO REMOVE STUDENTS -------------------------///
 
 
-app.put('/:id/deregister',(req,res) =>{
+app.put('/:id/deregister',middle,(req,res) =>{
     //res.send("put")
     const z=parseInt(req.params.id)
     const student_id = parseInt(req.body.studentId)

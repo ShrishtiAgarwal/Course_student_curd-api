@@ -2,11 +2,11 @@ const express=require('express')
 const app=express.Router()
 const fs=require('fs')
 const { parse } = require("path");
-
+const {middle} = require('./../middlewares/middle_ware')
 // ADDING STUDENT WITH ID AND NAME
 
 
-app.get('',(req,res)=>{
+app.get('',middle,(req,res)=>{
     fs.readFile('data(Jason)/Students.json',function (error,data){
         if(error)
         {
@@ -20,7 +20,7 @@ app.use(express.json())
 
 // DISPLAYING ALL STUDENTS
 
-app.post('',(req,res)=>{
+app.post('',middle,(req,res)=>{
     const obj = req.body.name
     fs.readFile('data(Jason)/Students.json',function (error,data){
         const obj1=JSON.parse(data)

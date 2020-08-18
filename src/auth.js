@@ -36,17 +36,29 @@ app.post("/login",(req,res) =>{
         console.log(obj.email)
         if(obj.email===email) {
             console.log("true")
-            bcrypt.compare(password, obj.encryptedpassword, function(err, result) {
+            bcrypt.compare(password, obj.encryptedpassword, (err, result) => {
                 if(result===true)
                 {
-                    res.send({
-                        "data": {
-                            "accessToken": generate(obj,salt)
-                        },
-                        "error": null
+                    res.json({
+
+                        "accessToken": generate(obj,salt)
+
+
                     })
                 }
-            });
+                else{
+                    res.json({
+                        "error":"Password invalid"
+                    })
+
+                }
+
+            })
+        }
+        else{
+            res.json({
+                "error":"Email invalid"
+            })
         }
     })
 
@@ -77,7 +89,7 @@ app.post("/signup",async (req,res) => {
         })
 
     console.log(password)
-    res.send({
+    res.json({
         "data": {
             "accessToken": "true"
         },
