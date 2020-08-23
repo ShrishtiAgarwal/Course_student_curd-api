@@ -41,7 +41,7 @@ app.use(express.json())
 //---------------------------------------------------------signup-------------------------------------------------------//
 app.post("/signup",async (req,res) => {
 
-    let validate = await login_validation.validate(req.body);
+    let validate = await signup_validation.validate(req.body);
 
     if(validate && validate.error)
     {
@@ -64,17 +64,17 @@ app.post("/signup",async (req,res) => {
     })
 })
 //-----------------------------------------------------------------logout-----------------------------------------------
-app.post("/logout",(req,res) =>{
-    let email=parse(req.body.email)
+app.post("/logout",async (req,res) =>{
+    let email=(req.body.email)
 
     const query2=`update student_data set islogin="false" where email=\'${email}\'`
-    create(query2).then(()=>{
+    await create(query2).then(()=>{
         res.json(
             { "data":"logout successfully"}
-        ).catch({
-            "error":"logout failed"
+        )}).catch(error => {
+           res.json( {"error":"logout failed"})
         })
-    })
+
 })
 
 

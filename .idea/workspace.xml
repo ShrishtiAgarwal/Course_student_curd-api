@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="163b522d-8eed-442e-9188-faafbeed9019" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/joi.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/joi.js" beforeDir="false" afterPath="$PROJECT_DIR$/lib/joi.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/courses.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/courses.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/student.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/student.js" afterDir="false" />
     </list>
@@ -98,7 +95,7 @@
       <workItem from="1598014270118" duration="15871000" />
       <workItem from="1598075676105" duration="15720000" />
       <workItem from="1598159531866" duration="15190000" />
-      <workItem from="1598175933018" duration="3794000" />
+      <workItem from="1598175933018" duration="7688000" />
     </task>
     <servers />
   </component>

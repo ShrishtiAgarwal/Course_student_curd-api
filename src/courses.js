@@ -161,7 +161,7 @@ app.post('/delete',middle,user,(req,res) => {
 
 
 app.post('/:id/enroll',middle,y,async (req,res)=> {
-    let validate = await enroll_deregister_validation.validate(req.params);
+    let validate = await enroll_deregister_validation.validate(req.body);
 
     if(validate && validate.error)
     {
@@ -224,7 +224,7 @@ app.post('/:id/enroll',middle,y,async (req,res)=> {
 
 app.put('/:id/deregister',middle,y,async (req,res) => {
     //res.send("put")
-    let validate = await enroll_deregister_validation.validate(req.params);
+    let validate = await enroll_deregister_validation.validate(req.body);
 
     if(validate && validate.error)
     {
