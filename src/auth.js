@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 const {to} = require('await-to-js')
 const {middle,y,user} = require('./../middlewares/middle_ware')
 const {con,create}=require('./../lib/sql_connection')
+const {login_validation}=require('./../lib/joi')
 con();
 //--------------------------generate token----------------------------------------------------
 
@@ -21,8 +22,15 @@ const generate = (password,salt) => {
 
 app.post("/login",async (req,res) => {
         //const Email = parse(req.body.email)
-        const {email,password} = (req.body)
-   // console.log(email,"here")
+
+    let validate = await login_validation.validate(req.body);
+
+    if(validate && validate.error)
+    {
+        return res.json({ data: null, error: validate["error"].message });
+    }
+    const {email,password} = (req.body)
+    // console.log(email,"here")
         const query = `select * from student_data where email=\'${email}\'`
 
 

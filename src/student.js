@@ -6,6 +6,7 @@ const {middle} = require('./../middlewares/middle_ware')
 const bcrypt = require('bcrypt')
 const {to} = require('await-to-js')
 const {con,create}=require('./../lib/sql_connection')
+const{signup_validation}=require('./../lib/joi')
 con()
 
 
@@ -40,6 +41,12 @@ app.use(express.json())
 //---------------------------------------------------------signup-------------------------------------------------------//
 app.post("/signup",async (req,res) => {
 
+    let validate = await login_validation.validate(req.body);
+
+    if(validate && validate.error)
+    {
+        return res.json({ data: null, error: validate["error"].message });
+    }
     let {userName, email, password} = (req.body)
     const encryptedpassword = await passwordHash(password)
     let query = `insert into student_data (name,email,encrypted_password) values (\'${userName}\',\'${email}\',\'${encryptedpassword}\');`

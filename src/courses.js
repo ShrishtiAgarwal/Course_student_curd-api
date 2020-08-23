@@ -5,6 +5,7 @@ const app = express.Router()
 app.use(express.json())
 const {middle,y,user} = require('./../middlewares/middle_ware')
 const {con,create}=require('./../lib/sql_connection')
+const {enroll_deregister_validation}=require('./../lib/joi')
 con();
 
 //--------------------------------------decreasing slots---------------------------------------------------------------//
@@ -160,6 +161,12 @@ app.post('/delete',middle,user,(req,res) => {
 
 
 app.post('/:id/enroll',middle,y,async (req,res)=> {
+    let validate = await enroll_deregister_validation.validate(req.params);
+
+    if(validate && validate.error)
+    {
+        return res.json({ data: null, error: validate["error"].message });
+    }
     const idd = parseInt(req.params.id);
     console.log(" heyyyy", idd)
 
@@ -217,7 +224,12 @@ app.post('/:id/enroll',middle,y,async (req,res)=> {
 
 app.put('/:id/deregister',middle,y,async (req,res) => {
     //res.send("put")
+    let validate = await enroll_deregister_validation.validate(req.params);
 
+    if(validate && validate.error)
+    {
+        return res.json({ data: null, error: validate["error"].message });
+    }
     const z = parseInt(req.params.id)
     const student_id = parseInt(req.body.studentId)
     increasing_slots(res,z,student_id)
