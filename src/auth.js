@@ -5,96 +5,90 @@ const { parse } = require("path")
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const {to} = require('await-to-js')
-
+const {middle,y,user} = require('./../middlewares/middle_ware')
+const {con,create}=require('./../lib/sql_connection')
+con();
 //--------------------------generate token----------------------------------------------------
 
 const salt = "shrishti"
 const generate = (password,salt) => {
-
     let token = jwt.sign( password , salt);
     return token;
 }
 
-//--------------------------password encryption----------------------------------------------------
-const passwordHash= async (password) =>{
-    const saltRounds=12
-    const [error,new_password]=await to(bcrypt.hash(password, saltRounds))
-    return new_password
-}
+
 // -------------------------login----------------------------
 
-app.post("/login",(req,res) =>{
-    const email =(req.body.email)
-    const password =(req.body.password)
-    // if(userName==="Iron Man")
-    //     console.log("true")
-    // console.log(password)
-    //let input=verify(password)
-    let pass = fs.readFileSync('data(Jason)/Auth.json')
-    let passcode=JSON.parse(pass)
-    passcode.data.forEach(obj =>{
-        console.log(obj.email)
-        if(obj.email===email) {
-            console.log("true")
-            bcrypt.compare(password, obj.encryptedpassword, (err, result) => {
-                if(result===true)
-                {
-                    res.json({
-
-                        "accessToken": generate(obj,salt)
+app.post("/login",async (req,res) => {
+        //const Email = parse(req.body.email)
+        const {email,password} = (req.body)
+   // console.log(email,"here")
+        const query = `select * from student_data where email=\'${email}\'`
 
 
+        let student=create(query)
+
+        await student.then((results)=> {
+            const query2=`update student_data set islogin="true" where email=\'${email}\'`
+            create(query2)
+            let obj={
+                id:results[0].id,
+                name:results[0].name,
+                email:results[0].email,
+                encrypted_password:results[0].encrypted_password
+
+            }
+
+        bcrypt.compare(password,results[0].encrypted_password,(err,result)=>{
+            if(result===true)
+            {
+
+                res.json({
+                        "data":generate(obj,salt)
                     })
-                }
-                else{
-                    res.json({
-                        "error":"Password invalid"
-                    })
-
-                }
-
-            })
-        }
-        else{
-            res.json({
-                "error":"Email invalid"
-            })
-        }
-    })
-
-
-})
-//let h={};
-
-
-
-
-//--------------------------signup------------------------------------//
-app.post("/signup",async (req,res) => {
-    // const userName =(req.body.userName)
-    //  const email = req.body.email
-    let {userName, email, password} = (req.body)
-    let  course = fs.readFileSync('data(Jason)/Auth.json')
-
-        let user = JSON.parse(course)
-        const encryptedpassword = await passwordHash(password)
-      //  h={encryptedpassword}
-       // console.log(h)
-       // console.log(encryptedpassword)
-        user.data.push({userName, email, encryptedpassword})
-        let json = JSON.stringify(user,null,2)
-
-        fs.writeFile('data(Jason)/Auth.json', json, () => {
-
+            }
+            else{
+                res.json({
+                    "error":"Email/password Invalid"
+                })
+            }
         })
+        }).catch( (error) => {
+            res.json(
+                {
+                    "error":"no access to database"
+                }
+            )
+        })
+    }
+)
+//-------------------------------------------------remove user----------------------------------------------------//
 
-    console.log(password)
-    res.json({
-        "data": {
-            "accessToken": "true"
-        },
-        "error": null
+app.post("/delete_user",middle,user,async (req,res)=>{
+    let name=(req.body.name);
+    console.log(name)
+    let query=`delete FROM student_data where name=\'${name}\'`
+    await create(query).then((result)=>{
+        console.log(result)
+        let query2=`DELETE FROM enrollment where student=\'${name}\'`
+        create(query2).then(()=>{
+             res.json({
+                 "data":"remove user"
+             })
+         }).catch(error => {
+             res.json({
+                 "error":"Can't remove user"
+             })
+         })
+
+    }).catch(error => {
+        res.json({
+            "error":"Can't remove user"
+        })
     })
 })
+
+
+
 
 module.exports=app;

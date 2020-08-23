@@ -2,218 +2,243 @@ const express = require('express')
 const { parse } = require("path");
 const fs = require('fs')
 const app = express.Router()
-const {middle} = require('./../middlewares/middle_ware')
+app.use(express.json())
+const {middle,y,user} = require('./../middlewares/middle_ware')
+const {con,create}=require('./../lib/sql_connection')
+con();
+
+//--------------------------------------decreasing slots---------------------------------------------------------------//
+async function decreasing_slots(res,idd,student_id) {
+    let query=`select availableSlots from courses_data where id=${idd}`
+    let as = create(query)
+    await as.then((result)=>{
+        let z= result[0].availableSlots-1
+        if(z<0)
+        {
+            res.json({
+                "error msg":"Not enough avaliable slots"
+            })
+            return false;
+        }
+        let query1=`update course_data set availableSlots=${z}`
+        create(query1)
+        return true;
+    })
+    //let query = `update course_data set availbale_slots=`
+}
+
+//--------------------------------------increasing slots---------------------------------------------------------------//
+async function increasing_slots(res,idd,student_id) {
+
+        let query1=`update course_data set availableSlots=availableSlots+1`
+        await create(query1)
+        return true;
 
 
-//-------------------- TO GET ALL THE COURSES -------------------//
+}
+//-------------------------------------------------------------TO GET ALL THE COURSES ------------------------------------------------------------------------//
+
+
 
 app.get('',middle,(re,res)=> {
  // Reading all courses from json file and displaying it on Postman or console
-
-
-    fs.readFile("data(Jason)/courses.json",function(err, data) {
-
-        // Check for errors
-        if (err) throw err
-
-        // Converting to JSON
-
-        let user;
-        user = JSON.parse(data);
-        let obj1={
-            "data":[]
-        }
-        for( obj in user.data)
-        {
-            const id=user.data[obj].id
-            const name=user.data[obj].name
-            obj1.data.push({id,name})
-        }
-        console.log(obj1) // Print users on console
-        res.send(obj1) // Printing on postman
-    });
-})
-
-//----------------- TO GET COURSE PRINTED HAVING SPECIFIC COURSE ID----------------//
-
-app.get('/:id',middle,(req,res) => {
-
-    const idd=parseInt(req.params.id)
-    // READING FILE
-    fs.readFile('data(Jason)/courses.json',function(error,data){
-        if(!error) {
-
-            // CONVERTING JASON DATA
-            const jsondata = JSON.parse(data)
-            let flag = 0
-            for (obj in jsondata.data) {
-                if (jsondata.data[obj].id === idd) {
-                    res.send(jsondata.data[obj])
-                    flag = 1
-                }
-            }
-
-            // IF there is no such course
-            if (flag === 0) {
-                res.send("No course with this id is present")
-            }
-        }
-        else
-        {
-            res.send(error)
-        }
+    const query = `select id,name from courses_data;`
+    create(query).then(function (results){
+        res.json({
+            "data":results,
+            "error":"null"
+        })
+    }).catch(error => {
+        res.json({
+            "error":"no database"
+        })
     })
 })
 
+//-------------------------------------------------------- TO GET COURSE PRINTED HAVING SPECIFIC COURSE ID---------------------------------------------//
+
+
+
+app.get('/:id',middle,async (req,res) => {
+    try {
+        let specific_course
+        let course_detail
+        const idd = parseInt(req.params.id)
+        const query = `select * from courses_data where id=${idd}`
+        const query2 = `select student_id,student from enrollment where course_id=${idd}`
+        let courses=create(query2)
+        await courses.then(function (results) {
+            specific_course=(results)
+
+            console.log(results)
+        }).catch(error => {
+            res.json({
+                "error": "no database"
+            })
+        })
+        let enrolls= create(query)
+            await enrolls.then(function (results) {
+           course_detail=(results)
+            console.log(results)
+        }).catch(error => {
+            res.json({
+                "error": "no database"
+            })
+        })
+
+
+
+        res.json({
+            "course":course_detail,
+            "emnrolled": specific_course,
+            "error": "null"
+        })
+    }catch(error){
+        res.json({
+            "error":"no id exist"
+        })
+    }
+})
+
+
+
+
+//-------------------------------------------- ADDING COURSE -----------------------------------------------------//
+
+
 app.use(express.json())
+app.post('',middle,user,(req,res) => {
 
-
-
-//-------------------- ADDING COURSE -----------------------------------------------------//
-
-
-
-app.post('',middle,(req,res) =>{
-    //res.send("Testing")
-    //const id = req.body.Id;
     const name = req.body.name;
     const description = req.body.description;
     const availableSlots = req.body.availableSlots;
+    let query = `INSERT INTO courses_data (name,description,availableSlots) VALUES (\'${name}\',\'${description}\',${availableSlots})`
 
-
-// stringify JSON Object
-
-    //console.log(jsonContent);
-    fs.readFile("data(Jason)/courses.json",  function(err,data){
-        if (!err) {
-            let obj1
-            console.log(data)
-            obj1 = JSON.parse(data)
-
-            let l
-            if(obj1.data.length>0)
-                l=obj1.data[obj1.data.length-1].id+1
-            else
-                l=1
-            const jsonData={
-                id : l,
-                name : name ,
-                description : description,
-                enrolledStudents:[],
-                availableSlots:availableSlots
-
-            }
-
-            console.log(obj1)
-            obj1.data.push(jsonData); //add some data
-            let json = JSON.stringify(obj1,null,2); //convert it back to json
-            fs.writeFile('data(Jason)/courses.json', json, "utf8" ,()=>{
-               res.json({"success":"true"});
-            })
-
-
-
-
-        } else {
-           res.send("error");
-        }
+    create(query).then(()=>{
+        res.json({
+            "data":"successful",
+            "error":"null"
+        })
+    }).catch(error => {
+        res.json({
+            "error":"Can't add a course"
+        })
     })
 
 })
 
-//---------------------- TO ENROLL STUDENTS --------------------------//
+//-------------------------------------------- DELETING COURSE -----------------------------------------------------//
 
 
-app.post('/:id/enroll',middle,(req,res)=>{
-    const idd=parseInt(req.params.id);
-    console.log(" heyyyy",idd)
+app.use(express.json())
+app.post('/delete',middle,user,(req,res) => {
 
-    const student_id=parseInt(req.body.studentId);
+    const id = parseInt(req.body.Id);
+    console.log(id)
+    let query = `DELETE FROM courses_data where id=${id}`
+    let query2= `Delete from enrollment where course_id=${id}`
+
+    create(query).then(()=>{
+        create(query2).then(()=>{
+            res.json({
+                "data":"success"
+            })
+        }).catch(error => {
+            res.json({
+                "error":"Can't remove course from enrollments"
+            })
+        })
+    }).catch(error => {
+        res.json({
+            "error":"no course with this id is there"
+        })
+    })
+
+})
+
+//------------------------------------------------------- TO ENROLL STUDENTS --------------------------//
+
+
+app.post('/:id/enroll',middle,y,async (req,res)=> {
+    const idd = parseInt(req.params.id);
+    console.log(" heyyyy", idd)
+
+
+    const student_id = parseInt(req.body.studentId);
     console.log(student_id)
-    let course = fs.readFileSync('data(Jason)/courses.json');
-    let student=fs.readFileSync('data(Jason)/Students.json')
-    let student_data = JSON.parse(student);
 
-            //console.log("hey")
-            //console.log(course_data)
-            let course_data = JSON.parse(course)
-            console.log(course)
-            //const obj1 = JSON.parse(data)
-            let y=0
-            for(obj in course_data.data)
-            {
-                console.log(course_data.data[obj].id)
-                if(course_data.data[obj].id===idd)
-                {
-                    y=1
-                    if(course_data.data[obj].availableSlots>0)
-                    {
-                        console.log("here")
+    try {
+        let x=decreasing_slots(res, idd, student_id)
+        if (x) {
+            console.log("here1")
+            let query1 = `select name from student_data where id=${student_id};`
+            let student = create(query1)
+            await student.then(function (result) {
+               //  console.log(result[0].name)
+                console.log("here2")
+                let query2 = `insert into enrollment (course_id,student_id,student) values (${idd},${student_id},\'${result[0].name}\')`
+                let enrollment=create(query2)
+                enrollment.then(function(result){
+                    res.json(
+                        {
+                            "data": "success"
+                        }
+                    )}).catch(error => {
+                res.json({
+                    "error":"Can't enroll"
+                })
+            })}).catch(error => {
+                        res.json({
+                                "error": "NO student with this id exist"
+                            }
+                        )
 
-                        course_data.data[obj].enrolledStudents.push(
-                            {id:student_id,name:student_data.data[student_id-1].name})
-                        course_data.data[obj].availableSlots=course_data.data[obj].availableSlots-1
-                    }
+                })
+
+
+        }}
+        catch(error ){
+
+            res.json({
+                    "data": "null",
+                    "error": "wrong"
                 }
-
-
-            }
-            if(y===0)
-                res.send("No such id is present")
-
-            let json = JSON.stringify(course_data,null,2); //convert it back to json
-            fs.writeFile('data(Jason)/courses.json', json, 'utf8' ,()=>{
-                res.json({"success":"true"});
-           })
-
-        console.log("out")
-
-
+            )
+        }
 
 })
 
 
-//-------------------- TO REMOVE STUDENTS -------------------------///
 
 
-app.put('/:id/deregister',middle,(req,res) =>{
+//------------------------------------------------ TO REMOVE ENROLLED STUDENTS -----------------------------------------------///
+
+
+
+app.put('/:id/deregister',middle,y,async (req,res) => {
     //res.send("put")
-    const z=parseInt(req.params.id)
+
+    const z = parseInt(req.params.id)
     const student_id = parseInt(req.body.studentId)
-    let course = fs.readFileSync('data(Jason)/courses.json');
-  //  let dataa = fs.readFileSync('data(Jason)/courses.json')
+    increasing_slots(res,z,student_id)
+        const query = `delete from enrollment where course_id=${z} and student_id=${student_id}`
 
-          let jsondata = JSON.parse(course)
-          const h=[]
-          let flag=0
-          //console.log(jsondata)
-          for(obj in jsondata.data)
-          {
-
-              if(jsondata.data[obj].id===z)
-              {
-                    flag=1
-
-                  //console.log(student_index)
-                  let student_index=jsondata.data[obj].enrolledStudents.indexOf(student_id)
-                    jsondata.data[obj].enrolledStudents.splice(student_index,1);
-                  jsondata.data[obj].availableSlots++
-              }
-          }
-      if(flag===0)
-          res.send("Invalid course/studentid")
-          //console.log(h)
-         // jsondata.data[obj].enrolledStudents=h
-
-    else{
-    let json = JSON.stringify(jsondata,null,2);
-          fs.writeFile('data(Jason)/courses.json', json, 'utf8' ,()=>{
-              res.json({"success":"true"});
-          })}
-
+        const deregister = create(query)
+        await deregister.then(() => {
+            res.json({
+                "data": "successfully deregistered"
+            })
+        }).catch(error => {
+            res.json({
+                "error": "error"
+            })
+        })
 
 
 
 })
 
-module.exports=app;
+
+
+
+module.exports=app
